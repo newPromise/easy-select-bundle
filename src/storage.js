@@ -14,10 +14,23 @@ class Storage {
     console.log('keyskeys', keys)
     return keys.map(k => `${this.prefix}_${k}`)
   }
+  removeUniquePrefix(itemObj) {
+    let result = {}
+    Object.entries(itemObj).reduce((res, cur) => {
+      const [k, v] = cur;
+      let removePrefixKey = k.split(`${this.prefix}_`)
+      removePrefixKey.shift()
+      res[removePrefixKey.join('')] = v
+      return res
+    }, result)
+    return result
+  }
   get(keys) {
     return new Promise(resolve => {
       keys = this.addUniquePrefix(keys)
-      this.store.get(keys, resolve)
+      this.store.get(keys, (values) => {
+        resolve(Array.isArray(values) ? values.map(this.removeUniquePrefix) : this.removeUniquePrefix(values))
+      })
     })
   }
   getAllList() {

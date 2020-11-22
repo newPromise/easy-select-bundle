@@ -65,10 +65,14 @@ export default {
         } else {
           this.title = await getPageSite();
         }
+        const storeValues = await store.get([this.title]);
+        this.commentValue = storeValues[this.title] || "";
       }
       this.oldCommentValue = this.commentValue;
-      this.addCommentValueWatch();
-      this.$refs.content.focus();
+      this.$nextTick(() => {
+        this.$refs.content.focus();
+        this.addCommentValueWatch();
+      });
     },
   },
   async mounted() {

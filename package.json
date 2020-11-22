@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "core-js": "^3.6.5",
+    "element-ui": "^2.14.1",
     "vue": "^2.6.11"
   },
   "devDependencies": {
@@ -24,6 +25,10 @@
     "root": true,
     "env": {
       "node": true
+    },
+    "globals": {
+      "chrome": true,
+      "chrome.storage": true
     },
     "extends": [
       "plugin:vue/essential",

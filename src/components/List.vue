@@ -1,6 +1,6 @@
 <template>
   <div class="list-container">
-    <div class="list">
+    <div class="list" v-if="list.length">
       <div class="item" v-for="(item, key) of list" :key="key">
         <div class="click-mask" @click="showDetail(item)"></div>
         <div class="item-card">
@@ -14,6 +14,7 @@
         </div>
       </div>
     </div>
+    <div v-else class="no-data"></div>
   </div>
 </template>
 <script>
@@ -22,10 +23,7 @@ export default {
   name: "list",
   data() {
     return {
-      list: new Array(18).fill({
-        title: "http://localhost:8080/",
-        value: "2222",
-      }),
+      list: [],
       deleteItems: [],
     };
   },
@@ -70,6 +68,12 @@ export default {
   width: 100%;
   box-sizing: border-box;
   overflow-y: scroll;
+  .no-data {
+    width: 100%;
+    height: 100%;
+    background: url("../assets/noData.png") no-repeat 100% 100%;
+    background-position: center;
+  }
   &::-webkit-scrollbar {
     width: 0;
   }

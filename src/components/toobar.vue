@@ -6,7 +6,12 @@
       </div>
       <div class="add-tag"></div>
       <div class="content-list">
-          <i class="el-icon-tickets" @click="$emit('to-list')"></i>
+        <i
+          v-if="isListPage"
+          class="el-icon-edit-outline"
+          @click="$emit('to-edit')"
+        ></i>
+        <i v-else class="el-icon-tickets" @click="$emit('to-list')"></i>
       </div>
     </div>
   </div>
@@ -14,6 +19,11 @@
 <script>
 export default {
   name: "toolbar",
+  props: {
+    isListPage: {
+      type: Boolean,
+    },
+  },
   data() {
     return {};
   },

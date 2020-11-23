@@ -10,7 +10,12 @@
       ></List>
     </div>
     <div class="tool-bar-wrapper">
-      <ToolBar @delete-items="deleteItems" @to-list="showAllNoteList"></ToolBar>
+      <ToolBar
+        @delete-items="deleteItems"
+        :isListPage="isListPage"
+        @to-list="showAllNoteList"
+        @to-edit="showEditBox"
+      ></ToolBar>
     </div>
   </div>
 </template>
@@ -49,6 +54,9 @@ export default {
     async deleteItems() {
       await contentStore.remove(this.selectItems.map(({ title }) => title));
       this.$refs.list.getList();
+    },
+    showEditBox() {
+      this.isListPage = false;
     },
     showAllNoteList() {
       this.isListPage = true;

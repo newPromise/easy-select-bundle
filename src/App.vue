@@ -2,10 +2,15 @@
   <div class="container-wrapper">
     <div class="container">
       <Content v-if="!isListPage" :editInfo="editItemInfo"></Content>
-      <List @edit-info="showItemDetail" v-else></List>
+      <List
+        ref="list"
+        @select-item="whenItemSelected"
+        @edit-info="showItemDetail"
+        v-else
+      ></List>
     </div>
     <div class="tool-bar-wrapper">
-      <ToolBar @to-list="showAllNoteList"></ToolBar>
+      <ToolBar @delete-items="deleteItems" @to-list="showAllNoteList"></ToolBar>
     </div>
   </div>
 </template>
@@ -14,6 +19,9 @@
 import Content from "./components/content";
 import ToolBar from "./components/toobar";
 import List from "./components/List";
+import Store from "./storage";
+
+const contentStore = new Store();
 export default {
   name: "App",
   components: {
@@ -26,6 +34,7 @@ export default {
       name: "",
       isListPage: false,
       editItemInfo: null,
+      selectItems: [],
     };
   },
   methods: {
@@ -33,6 +42,13 @@ export default {
       console.log("yes", detail);
       this.isListPage = false;
       this.editItemInfo = detail;
+    },
+    whenItemSelected(selItems) {
+      this.selectItems = selItems;
+    },
+    async deleteItems() {
+      await contentStore.remove(this.selectItems.map(({ title }) => title));
+      this.$refs.list.getList();
     },
     showAllNoteList() {
       this.isListPage = true;

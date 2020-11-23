@@ -2,7 +2,7 @@
   <div class="toolbar">
     <div class="tools">
       <div class="delete">
-        <i class="el-icon-delete"></i>
+        <i class="el-icon-delete" @click="$emit('delete-items')"></i>
       </div>
       <div class="add-tag"></div>
       <div class="content-list">

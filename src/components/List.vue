@@ -4,7 +4,10 @@
       <div class="item" v-for="(item, key) of list" :key="key">
         <div class="click-mask" @click="showDetail(item)"></div>
         <div class="item-card">
-          <el-checkbox @change="whenCheckChange"></el-checkbox>
+          <el-checkbox
+            v-model="item.isChecked"
+            @change="whenCheckChange(item)"
+          ></el-checkbox>
           <div class="item-title">
             {{ item.title }}
           </div>
@@ -23,16 +26,26 @@ export default {
         title: "http://localhost:8080/",
         value: "2222",
       }),
+      deleteItems: [],
     };
   },
   methods: {
     showDetail(item) {
       this.$emit("edit-info", item);
     },
-    whenCheckChange() {
-      console.log("select");
+    whenCheckChange(item) {
+      const itemIndex = this.deleteItems.indexOf(item);
+      if (itemIndex < 0) {
+        this.deleteItems.push(item);
+        item.isChecked = true;
+      } else {
+        this.deleteItems.splice(itemIndex, 1);
+        item.isChecked = false;
+      }
+      this.$emit("select-item", this.deleteItems);
     },
     async getList() {
+      this.deleteItems = [];
       const storage = new Store();
       const allData = await storage.getList();
       this.list = Object.entries(allData).reduce((res, cur) => {
@@ -40,6 +53,7 @@ export default {
         res.push({
           title: k,
           value: v,
+          isChecked: false,
         });
         return res;
       }, []);

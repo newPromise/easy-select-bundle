@@ -22,7 +22,7 @@
 
 <script>
 import Content from "./components/content";
-import ToolBar from "./components/toobar";
+import ToolBar from "./components/toolbar";
 import List from "./components/List";
 import Store from "./storage";
 
@@ -65,6 +65,7 @@ export default {
 };
 </script>
 <style>
+@import url("../src/assets/style/iconfont.css");
 body {
   width: 500px;
   box-sizing: border-box;

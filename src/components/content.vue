@@ -27,7 +27,7 @@ export default {
   },
   data() {
     return {
-      title: "fsafdas",
+      title: "",
       commentValue: "",
       oldCommentValue: "",
     };

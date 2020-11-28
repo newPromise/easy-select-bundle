@@ -43,9 +43,8 @@ export default {
     },
     async commentChange(changedValue) {
       let setItem = {};
-      setItem[this.title] = changedValue;
+      setItem[this.title] = { value: changedValue };
       store.set(setItem);
-      console.log("val", await store.get([this.title]));
     },
     addCommentValueWatch() {
       const htmlContent = this.$refs.content.innerHTML;
@@ -109,13 +108,6 @@ export default {
       &::-webkit-scrollbar {
         width: 0;
       }
-      //   &:empty:before {
-      //     content: "";
-      //     color: gray;
-      //   }
-      //   &:focus::before {
-      //     content: none;
-      //   }
     }
   }
 }

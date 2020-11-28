@@ -13,9 +13,14 @@
       <ToolBar
         @delete-items="deleteItems"
         :isListPage="isListPage"
+        :isCollected="isCollected"
         @to-list="showAllNoteList"
         @to-edit="showEditBox"
+        @to-collect="switchCollectVisible"
       ></ToolBar>
+    </div>
+    <div v-if="isShowCollectBox" class="collector">
+      <CollectList @select-collector="whenCollect"></CollectList>
     </div>
   </div>
 </template>
@@ -24,6 +29,7 @@
 import Content from "./components/content";
 import ToolBar from "./components/toolbar";
 import List from "./components/List";
+import CollectList from "./components/collectList";
 import Store from "./storage";
 
 const contentStore = new Store();
@@ -33,12 +39,15 @@ export default {
     Content,
     ToolBar,
     List,
+    CollectList,
   },
   data() {
     return {
       name: "",
       isListPage: false,
       editItemInfo: null,
+      isShowCollectBox: false,
+      isCollected: false,
       selectItems: [],
     };
   },
@@ -61,6 +70,13 @@ export default {
     showAllNoteList() {
       this.isListPage = true;
     },
+    switchCollectVisible() {
+      this.isShowCollectBox = !this.isShowCollectBox;
+    },
+    whenCollect() {
+      this.isCollected = true;
+      this.switchCollectVisible(false);
+    },
   },
 };
 </script>
@@ -74,7 +90,6 @@ body {
 <style scoped>
 .container-wrapper {
   width: 100%;
-  height: 300px;
   display: flex;
   flex-direction: column;
 }

@@ -8,10 +8,10 @@ class Storage {
     } else {
       this.prefix = `storage_data_${this.storeDataType}`
     }
+    this.isContentData = this.storeDataType === 'content' 
   }
   addUniquePrefix(keys) {
     if (!this.storeDataType) return keys
-    console.log('keyskeys', keys)
     return keys.map(k => `${this.prefix}_${k}`)
   }
   removeUniquePrefix(itemObj) {
@@ -27,10 +27,16 @@ class Storage {
   }
   get(keys) {
     return new Promise(resolve => {
-      keys = this.addUniquePrefix(keys)
-      this.store.get(keys, (values) => {
-        resolve(Array.isArray(values) ? values.map(this.removeUniquePrefix) : this.removeUniquePrefix(values))
-      })
+      if (this.isContentData) {
+        keys = this.addUniquePrefix(keys)
+          this.store.get(keys, (values) => {
+            resolve(Array.isArray(values) ? values.map(this.removeUniquePrefix) : this.removeUniquePrefix(values))
+          })
+      } else {
+        this.store.get([this.prefix], values => {
+          resolve(values[this.prefix])
+        })
+      }
     })
   }
   getAllList() {
@@ -57,10 +63,9 @@ class Storage {
     }
   }
   // { tags: ['fsfdsfsf'] }
-  set(updateObj) {
+  async set(updateObj) {
     if (this.storeDataType === 'content') {
       for (let k in updateObj) {
-        console.log('keykey', k)
         updateObj[this.addUniquePrefix([k])[0]] = updateObj[k]
         delete updateObj[k]
       }
@@ -68,8 +73,22 @@ class Storage {
     } else {
       let storeItem = {}
       storeItem[this.prefix] = updateObj
-      this.store.set(storeItem)
+      await this.store.set(storeItem)
     }
+  }
+  async addFavor(favorItem) {
+    if (this.storeDataType !== 'facorites') return;
+    let allFavorites = await this.get() || []
+    allFavorites.unshift(favorItem)
+    await this.set(allFavorites)
+  }
+  async removeFavor(favorName) {
+    let allFavorites = await this.get() || []
+    if (!allFavorites.length) return
+    const removeFavorIndex = allFavorites.findIndex(favor => favor.name === favorName)
+    allFavorites.splice(removeFavorIndex, 1)
+    await this.set(allFavorites)
+    return allFavorites
   }
   clear() {
     return new Promise(resolve => {

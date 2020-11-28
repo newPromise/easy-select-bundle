@@ -12,11 +12,14 @@
         <span v-else>
           <i
             v-if="hasCollected"
-            @click="removeCollect"
+            @click="$emit('to-collect', true)"
             class="iconfont icon-shouchang1"
             >&#xe629;</i
           >
-          <i v-else @click="collect" class="iconfont icon-shouchang"
+          <i
+            v-else
+            @click="$emit('to-collect', true)"
+            class="iconfont icon-shouchang"
             >&#xe639;</i
           >
           <i class="el-icon-tickets" @click="$emit('to-list')"></i>
@@ -35,6 +38,12 @@ export default {
     isCollected: {
       type: Boolean,
       default: false,
+    },
+  },
+  watch: {
+    isCollected: function (v) {
+      console.log("vvvv", v);
+      this.hasCollected = v;
     },
   },
   data() {
@@ -59,7 +68,7 @@ export default {
   .icon-shouchang {
     cursor: pointer;
     &:hover {
-      color: red;
+      color: #ea9518;
     }
   }
   .icon-shouchang,
@@ -68,7 +77,7 @@ export default {
   }
   .icon-shouchang1 {
     cursor: pointer;
-    color: red;
+    color: #ea9518;
   }
   .el-icon-delete,
   .el-icon-edit-outline,

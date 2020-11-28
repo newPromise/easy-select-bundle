@@ -50,11 +50,12 @@ export default {
         const [k, v] = cur;
         res.push({
           title: k,
-          value: v,
+          value: v.value,
           isChecked: false,
         });
         return res;
       }, []);
+      console.log("this.listthis.list", this.list);
     },
   },
   mounted() {
@@ -66,6 +67,8 @@ export default {
 .list-container {
   padding: 10px;
   width: 100%;
+  min-height: 250px;
+  max-height: 500px;
   box-sizing: border-box;
   overflow-y: scroll;
   .no-data {

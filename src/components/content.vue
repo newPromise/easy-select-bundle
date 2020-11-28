@@ -65,7 +65,7 @@ export default {
           this.title = await getPageSite();
         }
         const storeValues = await store.get([this.title]);
-        this.commentValue = storeValues[this.title] || "";
+        this.commentValue = storeValues[this.title].value || "";
       }
       this.oldCommentValue = this.commentValue;
       this.$nextTick(() => {

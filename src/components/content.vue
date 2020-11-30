@@ -24,6 +24,9 @@ export default {
     editInfo: {
       type: Object,
     },
+    favorites: {
+      type: Array,
+    },
   },
   data() {
     return {
@@ -37,14 +40,28 @@ export default {
       return debounce(this.addCommentValueWatch, 500);
     },
   },
+  watch: {
+    favorites: {
+      handler(v) {
+        this.setFavorites(v);
+      },
+      deep: true,
+    },
+  },
   methods: {
     addComment(val) {
       console.log("valval", val);
     },
     async commentChange(changedValue) {
-      let setItem = {};
-      setItem[this.title] = { value: changedValue };
-      store.set(setItem);
+      console.log("changedValue", changedValue);
+      await store.setContentValue(this.title, { value: changedValue });
+    },
+    async setFavorites(val) {
+      await store.setContentValue(this.title, { favorites: val });
+    },
+    async getFavorites() {
+      const storeValues = await store.get([this.title]);
+      return storeValues[this.title].favorites || [];
     },
     addCommentValueWatch() {
       const htmlContent = this.$refs.content.innerHTML;
@@ -66,6 +83,8 @@ export default {
         }
         const storeValues = await store.get([this.title]);
         this.commentValue = storeValues[this.title].value || "";
+        const favorites = await this.getFavorites();
+        this.$emit("get-favorites", favorites);
       }
       this.oldCommentValue = this.commentValue;
       this.$nextTick(() => {

@@ -45,6 +45,14 @@ import RadioBtn from "./radioBtn";
 import Store from "../storage";
 const collectStore = new Store("facorites");
 export default {
+  props: {
+    selectedCollectorList: {
+      type: Array,
+      default: () => {
+        return [];
+      },
+    },
+  },
   data() {
     return {
       allCollectList: [],
@@ -54,6 +62,14 @@ export default {
   },
   components: {
     RadioBtn,
+  },
+  watch: {
+    selectedCollectorList: {
+      handler(v) {
+        this.resetCheckList(v);
+      },
+      deep: true,
+    },
   },
   computed: {
     collectedList: function () {
@@ -102,8 +118,16 @@ export default {
     selectItem(item) {
       item.isChecked = !item.isChecked;
     },
+    resetCheckList(list) {
+      this.allCollectList = this.allCollectList.map((collect) => {
+        return Object.assign({}, collect, {
+          isChecked: list.includes(collect.name),
+        });
+      });
+    },
     async getData() {
       this.allCollectList = await collectStore.get();
+      this.resetCheckList(this.selectedCollectorList);
     },
     ensureSelectCollector() {
       this.$emit("select-collector", this.collectedList);

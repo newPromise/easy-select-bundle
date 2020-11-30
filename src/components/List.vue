@@ -51,6 +51,7 @@ export default {
         res.push({
           title: k,
           value: v.value,
+          favorites: v.favorites,
           isChecked: false,
         });
         return res;

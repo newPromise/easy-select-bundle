@@ -1,7 +1,13 @@
 <template>
   <div class="container-wrapper">
     <div class="container">
-      <Content v-if="!isListPage" :editInfo="editItemInfo"></Content>
+      <Content
+        v-if="!isListPage"
+        :editInfo="editItemInfo"
+        ref="editContent"
+        @get-favorites="getFavorites"
+        :favorites="favorites"
+      ></Content>
       <List
         ref="list"
         @select-item="whenItemSelected"
@@ -19,8 +25,11 @@
         @to-collect="switchCollectVisible"
       ></ToolBar>
     </div>
-    <div v-if="isShowCollectBox" class="collector">
-      <CollectList @select-collector="whenCollect"></CollectList>
+    <div v-show="isShowCollectBox" class="collector">
+      <CollectList
+        @select-collector="whenCollect"
+        :selectedCollectorList="selectedCollectorList"
+      ></CollectList>
     </div>
   </div>
 </template>
@@ -49,15 +58,25 @@ export default {
       isShowCollectBox: false,
       isCollected: false,
       selectItems: [],
+      favorites: [],
+      selectedCollectorList: [],
     };
   },
   methods: {
+    getFavorites(favorites) {
+      this.selectedCollectorList = favorites;
+      this.isCollected = !!this.selectedCollectorList.length;
+    },
     showItemDetail(detail) {
       console.log("yes", detail);
       this.isListPage = false;
       this.editItemInfo = detail;
+      this.$nextTick(async () => {
+        this.selectedCollectorList = await this.$refs.editContent.getFavorites();
+        this.isCollected = !!this.selectedCollectorList.length;
+      });
     },
-    whenItemSelected(selItems) {
+    async whenItemSelected(selItems) {
       this.selectItems = selItems;
     },
     async deleteItems() {
@@ -69,12 +88,14 @@ export default {
     },
     showAllNoteList() {
       this.isListPage = true;
+      this.isShowCollectBox = false;
     },
     switchCollectVisible() {
       this.isShowCollectBox = !this.isShowCollectBox;
     },
-    whenCollect() {
+    whenCollect(selectedCollectList) {
       this.isCollected = true;
+      this.favorites = selectedCollectList.map(({ name }) => name);
       this.switchCollectVisible(false);
     },
   },

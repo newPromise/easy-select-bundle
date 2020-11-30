@@ -76,6 +76,17 @@ class Storage {
       await this.store.set(storeItem)
     }
   }
+  async setContentValue(title, resetObj) {
+    const getObj = await this.get([title]) || {}
+    console.log('getObj', getObj)
+    console.log('objTitle', getObj[title], resetObj)
+    const originValue = (getObj[title]) || {}
+    const setItem = {}
+    setItem[title] = Object.assign({}, originValue, resetObj)
+    console.log('or', originValue, resetObj)
+    await this.set(setItem)
+    console.log('getget', await this.get([title]))
+  }
   async addFavor(favorItem) {
     if (this.storeDataType !== 'facorites') return;
     let allFavorites = await this.get() || []

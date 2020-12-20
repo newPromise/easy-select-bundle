@@ -53,15 +53,45 @@ export default {
       console.log("valval", val);
     },
     async commentChange(changedValue) {
-      console.log("changedValue", changedValue);
       await store.setContentValue(this.title, { value: changedValue });
     },
     async setFavorites(val) {
       await store.setContentValue(this.title, { favorites: val });
     },
+    async setTags(tags) {
+      await store.setContentValue(this.title, { tags });
+    },
+    // async removeTag(tag) {},
+    async addTag(tag) {
+      const allTags = await this.getTags();
+      const hasTag = allTags.find((tagItem) => tagItem.text === tag.text);
+      // 只有当 tag 不存在的时候，才要添加新的 tag
+      if (!hasTag) {
+        allTags.push(tag);
+        await this.setTags(allTags);
+      }
+      return allTags;
+    },
+    // 移除 文章 tag
+    async removeTag(tag) {
+      const allTags = await this.getTags();
+      const spliceIndex = allTags.findIndex(
+        (tagItem) => tagItem.text === tag.text
+      );
+      allTags.splice(spliceIndex, 1);
+      await this.setTags(allTags);
+      return allTags;
+    },
+    // 获取所有的收藏夹
     async getFavorites() {
       const storeValues = await store.get([this.title]);
       return storeValues[this.title].favorites || [];
+    },
+    // 获取所有的标签
+    async getTags() {
+      const storeValues = await store.get([this.title]);
+      const existContent = storeValues[this.title];
+      return existContent ? existContent.tags || [] : [];
     },
     addCommentValueWatch() {
       const htmlContent = this.$refs.content.innerHTML;
@@ -85,6 +115,8 @@ export default {
         this.commentValue = storeValues[this.title].value || "";
         const favorites = await this.getFavorites();
         this.$emit("get-favorites", favorites);
+        const tags = await this.getTags();
+        this.$emit("get-tags", tags);
       }
       this.oldCommentValue = this.commentValue;
       this.$nextTick(() => {

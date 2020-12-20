@@ -59,7 +59,7 @@ class Storage {
       }, list)
       return list
     } else {
-      return storeData[this.prefix]
+      return storeData[this.prefix] || []
     }
   }
   // { tags: ['fsfdsfsf'] }
@@ -100,6 +100,20 @@ class Storage {
     allFavorites.splice(removeFavorIndex, 1)
     await this.set(allFavorites)
     return allFavorites
+  }
+  async addTag(tagName) {
+    if (this.storeDataType !== 'tags') return;
+    let allTags = await this.get() || []
+    allTags.unshift({ text: tagName })
+    await this.set(allTags)
+  }
+  async removeTag(tagName) {
+    let tagList = await this.get() || []
+    if (!tagList.length) return
+    const removeTagIndex = tagList.findIndex(tag => tag.text === tagName)
+    tagList.splice(removeTagIndex, 1)
+    await this.set(tagList)
+    return tagList
   }
   clear() {
     return new Promise(resolve => {

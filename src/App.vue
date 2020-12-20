@@ -6,6 +6,7 @@
         :editInfo="editItemInfo"
         ref="editContent"
         @get-favorites="getFavorites"
+        @get-tags="getTags"
         :favorites="favorites"
       ></Content>
       <List
@@ -14,6 +15,14 @@
         @edit-info="showItemDetail"
         v-else
       ></List>
+    </div>
+    <!-- 当文章列表页的时候隐藏 tag 选项 -->
+    <div class="tags" v-if="!isListPage">
+      <TagList
+        :tags="contentTags"
+        @select-tag="whenSelectTag"
+        @remove-tag="whenRemoveTag"
+      ></TagList>
     </div>
     <div class="tool-bar-wrapper">
       <ToolBar
@@ -39,6 +48,7 @@ import Content from "./components/content";
 import ToolBar from "./components/toolbar";
 import List from "./components/List";
 import CollectList from "./components/collectList";
+import TagList from "./components/tagList";
 import Store from "./storage";
 
 const contentStore = new Store();
@@ -49,6 +59,7 @@ export default {
     ToolBar,
     List,
     CollectList,
+    TagList,
   },
   data() {
     return {
@@ -60,6 +71,8 @@ export default {
       selectItems: [],
       favorites: [],
       selectedCollectorList: [],
+      // 当前便捷内容的所有标签
+      contentTags: [],
     };
   },
   methods: {
@@ -67,12 +80,28 @@ export default {
       this.selectedCollectorList = favorites;
       this.isCollected = !!this.selectedCollectorList.length;
     },
+    // 当选中 tag 时
+    async whenSelectTag(tag) {
+      console.log("tag", tag);
+      await this.$refs.editContent.addTag({ text: tag.text });
+      const allTags = await this.$refs.editContent.getTags();
+      this.getTags(allTags);
+    },
+    // 当移除 tag 的时候
+    async whenRemoveTag(removedTag) {
+      await this.$refs.editContent.removeTag(removedTag);
+      const allTags = await this.$refs.editContent.getTags();
+      this.getTags(allTags);
+    },
+    getTags(tags) {
+      this.contentTags = tags;
+    },
     showItemDetail(detail) {
-      console.log("yes", detail);
       this.isListPage = false;
       this.editItemInfo = detail;
       this.$nextTick(async () => {
         this.selectedCollectorList = await this.$refs.editContent.getFavorites();
+        this.contentTags = await this.$refs.editContent.getTags();
         this.isCollected = !!this.selectedCollectorList.length;
       });
     },
@@ -118,6 +147,10 @@ body {
   flex: 1;
   display: flex;
   height: 100%;
+}
+.tags {
+  padding-left: 10px;
+  margin: 5px 0;
 }
 .tool-bar-wrapper {
   flex: none;
